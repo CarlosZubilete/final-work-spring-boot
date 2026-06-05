@@ -1,0 +1,113 @@
+@startuml
+
+title Final Project - Spring Boot - UML Class Diagram
+
+    
+    skinparam componentStyle uml2
+    skinparam PackageStyle rectangle
+    skinparam ClassAttributeIconSize 0
+
+
+    ' Professional colors
+    skinparam class {
+        BackgroundColor<<Entity>> #FFF3E0
+        BorderColor<<Entity>> #E65100
+        BackgroundColor<<Author>> #E8F5E9
+        BorderColor<<Author>> #2E7D32
+    }
+
+
+    class Brand <<Entity>>{
+        - Long id
+        - String name
+        - List<Product> products 
+    }
+
+    class Category <<Entity>>{
+        - Long id
+        - String name
+        - List<Product> products 
+    }
+
+    class Inventory <<Entity>> {
+        - Long id
+        - String codeSKU
+        - Integer stock
+        - Product product
+    }
+
+    class Product <<Entity>>{
+        - Long id
+        - String name
+        - String description
+        - Double price
+        - Inventory inventory
+        - Brand brand
+        - Category category
+        - List<SaleDetail> saleDetails
+        - LocalDateTime createdAt
+        - LocalDateTime updatedAt
+        - Boolean isActive
+    }
+
+    Class StateSale <<Entity>> {
+        - Long id
+        - String name
+        - List<Sale> sales
+    }
+
+    Class Client <<Entity>> {
+        - Long id
+        - String firstName
+        - String lastName
+        - String document
+        - String email
+        - String phone
+        - List<Sale> sales
+        - LocalDateTime createdAt
+        - LocalDateTime updatedAt
+        - Boolean isActive
+    }
+
+    Class Sale <<Entity>> {
+        - Long id
+        - LocalDateTime date
+        - Client client
+        - StateSale stateSale
+        - Double total
+        - List<SaleDetail> saleDetails
+        - LocalDateTime createdAt
+        - LocalDateTime updatedAt
+    }
+
+    Class SaleDetail <<Entity>> {
+        - Long id
+        - Sale sale
+        - Product product
+        - Integer quantity
+        - Double unitPrice
+    }
+
+
+    Brand "1" -- "0..*" Product : < has
+    Category "1" -- "0..*" Product : < has
+    Client "1" -- "0..*" Sale : < belongs
+    StateSale "1" -- "0..*" Sale : < has
+    Sale "1" -- "0..*" SaleDetail : < contains
+    Product "1" -- "0..*" SaleDetail : < includes
+    Inventory "1" -- "1" Product : < contains
+
+    
+
+footer github.com/CarlosZubilete | June 2026 
+
+@enduml
+
+
+
+'legend right
+'|<#E8F5E9> Created by: Carlos Zubilete |
+'|<#E8F5E9> Date: June 4, 2026 |
+'|<#E8F5E9> Version: 1.0 |
+'|<#E8F5E9> Status: Final |
+'endlegend
