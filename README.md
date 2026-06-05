@@ -33,6 +33,7 @@ You can observe:
 - The classes that represent database tables.
 - JPA annotations for ORM mapping.
 - Relationships between classes (composition and bidirectional).
+- You'll see the entities in [model-package](src/main/java/com/final_work_spring_boot/model) and their relationships.
 
 ### 💡 Critical Decisions and Benefits
 
