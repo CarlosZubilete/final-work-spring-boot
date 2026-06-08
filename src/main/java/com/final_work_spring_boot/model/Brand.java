@@ -27,11 +27,14 @@ public class Brand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_brand")
     private Long id;
+
+    @Column(unique = true)
     private String name;
 
     // ONE brand has MANY products
     @OneToMany(mappedBy = "brand")
     // 'brand' is the property's name of Product class.
-    // mappedBy -> (non-owning) indicates that the other entity is the owner of relationships.
+    // mappedBy -> (non-owning) indicates that the other entity is the owner of
+    // relationships.
     private List<Product> products;
 }

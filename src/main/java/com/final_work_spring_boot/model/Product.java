@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,7 +42,7 @@ public class Product {
     private Double price;
 
     // ONE product have ONE inventory
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, orphanRemoval = true)
     @JoinColumn(name = "id_inventory") // 'id_inventory' is the FK
     private Inventory inventory;
 
@@ -57,7 +58,7 @@ public class Product {
 
     // ONE product can be may MANY details
     @OneToMany(mappedBy = "product")
-    private List<SaleDetail> details;
+    private List<Detail> details;
 
     @Column(name = "created_at")
     @CreationTimestamp
