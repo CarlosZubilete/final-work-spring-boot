@@ -2,6 +2,7 @@ package com.final_work_spring_boot.model;
 
 import java.util.List;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,11 +28,14 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_category")
     private Long id;
+
+    @Column(unique = true)
     private String name;
 
     // ONE category can have one or MANY products
     @OneToMany(mappedBy = "category")
     // 'category' is the property's name of Product class.
-    // mappedBy -> (non-owning) indicates that the other entity is the owner of relationships.
+    // mappedBy -> (non-owning) indicates that the other entity is the owner of
+    // relationships.
     private List<Product> products;
 }

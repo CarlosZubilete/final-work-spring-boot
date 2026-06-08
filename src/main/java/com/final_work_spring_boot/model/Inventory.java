@@ -1,6 +1,5 @@
 package com.final_work_spring_boot.model;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,12 +19,15 @@ public class Inventory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_inventory")
     private Long id;
-    @Column(name = "code_sku")
+
+    @Column(name = "code_sku", unique = true , length = 8)
     private String codeSKU;
     private Integer stock;
+
     // ONE inventory has ONE product
     @OneToOne(mappedBy = "inventory")
     // 'inventory' is the property's name of Product class.
-    // mappedBy -> (non-owning) indicates that the other entity is the owner of relationships.
+    // mappedBy -> (non-owning) indicates that the other entity is the owner of
+    // relationships.
     private Product product;
 }

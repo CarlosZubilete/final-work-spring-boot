@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,7 +42,7 @@ public class Sale {
 
     // MANY sales belong to ONE CLIENT
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_client") // 'id_client' is the FK 
+    @JoinColumn(name = "id_client") // 'id_client' is the FK
     private Client client;
 
     // MANY sales may have the same (ONE) stateSale
@@ -52,8 +53,8 @@ public class Sale {
     @Column(name = "total_sale")
     private Double total;
 
-    @OneToMany(mappedBy = "sale")
-    private List<SaleDetail> details; 
+    @OneToMany(mappedBy = "sale", cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Detail> details;
 
     @Column(name = "created_at")
     @CreationTimestamp

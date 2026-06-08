@@ -44,7 +44,7 @@ title Final Project - Spring Boot - UML Class Diagram
         - Inventory inventory
         - Brand brand
         - Category category
-        - List<SaleDetail> saleDetails
+        - List<Detail> details
         - LocalDateTime createdAt
         - LocalDateTime updatedAt
         - Boolean isActive
@@ -75,12 +75,12 @@ title Final Project - Spring Boot - UML Class Diagram
         - Client client
         - StateSale stateSale
         - Double total
-        - List<SaleDetail> saleDetails
+        - List<Detail> details
         - LocalDateTime createdAt
         - LocalDateTime updatedAt
     }
 
-    Class SaleDetail <<Entity>> {
+    Class Detail <<Entity>> {
         - Long id
         - Sale sale
         - Product product
@@ -93,8 +93,8 @@ title Final Project - Spring Boot - UML Class Diagram
     Category "1" -- "0..*" Product : < has
     Client "1" -- "0..*" Sale : < belongs
     StateSale "1" -- "0..*" Sale : < has
-    Sale "1" -- "0..*" SaleDetail : < contains
-    Product "1" -- "0..*" SaleDetail : < includes
+    Sale "1" -- "0..*" Detail : < contains
+    Product "1" -- "0..*" Detail : < includes
     Inventory "1" -- "1" Product : < contains
 
     

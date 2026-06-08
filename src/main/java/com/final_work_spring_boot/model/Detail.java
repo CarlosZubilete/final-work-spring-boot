@@ -21,11 +21,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "sale_details")
-public class SaleDetail {
+@Table(name = "details")
+// watchout: Sometimes <<details>> is a reserved word
+public class Detail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_sale_detail")
+    @Column(name = "id_detail")
     private Long id;
 
     // MANY sale_details have ONE sale
@@ -43,4 +44,7 @@ public class SaleDetail {
 
     @Column(name = "unit_price")
     private Double unitPrice;
+
+    // Can I add a subtotal Column ? 
+    // Not , because it's a calculated filed
 }
