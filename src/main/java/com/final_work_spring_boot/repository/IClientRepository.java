@@ -13,7 +13,7 @@ import com.final_work_spring_boot.model.Client;
 @Repository
 public interface IClientRepository extends JpaRepository<Client, Long> {
     @Modifying
-    @Query("UPDATE Client cli SET cli.isActive = 'false' WHERE cli.id = :id ")
+    @Query("UPDATE Client cli SET cli.isActive = false WHERE cli.id = :id ")
     void logicDeleteById(@Param("id") Long id);
 
     Optional<Client> findByDocument(String document);

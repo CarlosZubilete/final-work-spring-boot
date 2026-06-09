@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.final_work_spring_boot.dto.InventoryDTO;
+import com.final_work_spring_boot.dto.request.inventory.InventoryCreateDTO;
 import com.final_work_spring_boot.exception.BusinessException;
 import com.final_work_spring_boot.exception.NotFoundException;
 import com.final_work_spring_boot.mapper.InventoryMapper;
@@ -14,32 +14,30 @@ import com.final_work_spring_boot.repository.IInventoryRepository;
 import com.final_work_spring_boot.service.IGenericService;
 
 @Service
-public class InventoryService implements IGenericService<InventoryDTO> {
+public class InventoryService implements IGenericService<InventoryCreateDTO> {
 
     @Autowired
     private IInventoryRepository repository;
 
     @Override
-    public List<InventoryDTO> getAll() {
+    public List<InventoryCreateDTO> getAll() {
         return repository.findAll().stream()
                 .map(InventoryMapper::toDTO).toList();
     }
 
     @Override
-    public InventoryDTO getById(Long id) {
+    public InventoryCreateDTO getById(Long id) {
         return repository.findById(id).map(InventoryMapper::toDTO)
                 .orElseThrow(() -> new NotFoundException("Inventory whit ID: " + id + " NOT FOUND."));
     }
 
     @Override
-    public InventoryDTO save(InventoryDTO dto) {
+    public InventoryCreateDTO save(InventoryCreateDTO dto) {
 
-        String isExistingSKU = dto.getCodeSKU().toUpperCase().trim();
+        String isExistingCodeSKU = dto.getCodeSKU().toUpperCase().trim();
 
-        Inventory isRepeatedInventory = repository.findByCodeSKU(isExistingSKU).orElse(null);
-
-        if (isRepeatedInventory != null)
-            throw new BusinessException("Inventory whit CODE SKU: " + isExistingSKU + " ALREADY EXISTS.");
+        if (repository.existsByCodeSKU(isExistingCodeSKU))
+            throw new BusinessException("Inventory whit CODE SKU: " + isExistingCodeSKU + " ALREADY EXISTS.");
 
         Inventory inventory = InventoryMapper.toEntity(dto);
 
@@ -47,17 +45,15 @@ public class InventoryService implements IGenericService<InventoryDTO> {
     }
 
     @Override
-    public InventoryDTO update(InventoryDTO dto, Long id) {
+    public InventoryCreateDTO update(InventoryCreateDTO dto, Long id) {
 
         Inventory existingInventory = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Inventory whit ID: " + id + " NOT FOUND."));
 
-        String isExistingSKU = dto.getCodeSKU().toUpperCase().trim();
+        String isExistingCodeSKU = dto.getCodeSKU().toUpperCase().trim();
 
-        Inventory isRepeatedInventory = repository.findByCodeSKU(isExistingSKU).orElse(null);
-
-        if (isRepeatedInventory != null)
-            throw new BusinessException("Inventory whit CODE SKU: " + isExistingSKU + " ALREADY EXISTS.");
+        if (repository.existsByCodeSKU(isExistingCodeSKU))
+            throw new BusinessException("Inventory whit CODE SKU: " + isExistingCodeSKU + " ALREADY EXISTS.");
 
         InventoryMapper.updateEntity(existingInventory, dto);
 

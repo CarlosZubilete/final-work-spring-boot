@@ -1,6 +1,8 @@
 package com.final_work_spring_boot.mapper;
 
-import com.final_work_spring_boot.dto.ProductDTO;
+import com.final_work_spring_boot.dto.request.product.ProductCreateDTO;
+import com.final_work_spring_boot.dto.request.product.ProductUpdateDTO;
+import com.final_work_spring_boot.dto.response.ProductResponseDTO;
 import com.final_work_spring_boot.model.Brand;
 import com.final_work_spring_boot.model.Category;
 import com.final_work_spring_boot.model.Inventory;
@@ -8,21 +10,25 @@ import com.final_work_spring_boot.model.Product;
 
 public class ProductMapper {
 
-    public static ProductDTO toDTO(Product product) {
+    public static ProductResponseDTO toDTO(Product product) {
         if (product == null)
             return null;
 
-        return ProductDTO.builder()
+        return ProductResponseDTO.builder()
+                .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
-                .inventory(product.getInventory())
-                .idBrand(product.getBrand().getId())
-                .idCategory(product.getCategory().getId())
+                .codeSKU(product.getInventory().getCodeSKU())
+                .stock(product.getInventory().getStock())
+                .brand(product.getBrand().getName())
+                .category(product.getCategory().getName())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
                 .build();
     }
 
-    public static Product toEntity(ProductDTO dto, Inventory inventory, Brand brand, Category category) {
+    public static Product toEntity(ProductCreateDTO dto, Inventory inventory, Brand brand, Category category) {
         if (dto == null)
             return null;
 
@@ -37,8 +43,8 @@ public class ProductMapper {
                 .build();
     }
 
-    public static void updateEntity(Product product, ProductDTO dto, Inventory inventory, Brand brand,
-            Category category) {
+    public static void updateEntity(Product product, ProductUpdateDTO dto, Brand brand,
+                                    Category category) {
 
         if (dto == null)
             return;
@@ -52,16 +58,11 @@ public class ProductMapper {
         if (dto.getPrice() != null)
             product.setPrice(dto.getPrice());
 
-        if (dto.getInventory() != null)
-            product.setInventory(inventory);
-
         if (dto.getIdBrand() != null)
             product.setBrand(brand);
 
         if (dto.getIdCategory() != null)
             product.setCategory(category);
-
-        // Do I have a set the local date to updated field ?
     }
 
 }

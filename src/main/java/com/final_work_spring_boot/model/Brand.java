@@ -28,7 +28,7 @@ public class Brand {
     @Column(name = "id_brand")
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true , length = 50)
     private String name;
 
     // ONE brand has MANY products
