@@ -2,13 +2,17 @@ package com.final_work_spring_boot.service.impl;
 
 import java.util.List;
 
+import com.final_work_spring_boot.dto.request.product.ProductUpdateDTO;
+import com.final_work_spring_boot.dto.response.ProductResponseDTO;
+import com.final_work_spring_boot.exception.BadRequestException;
+import com.final_work_spring_boot.mapper.InventoryMapper;
+import com.final_work_spring_boot.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.final_work_spring_boot.dto.ProductDTO;
+import com.final_work_spring_boot.dto.request.product.ProductCreateDTO;
 import com.final_work_spring_boot.exception.NotFoundException;
-import com.final_work_spring_boot.exception.BadRequestException;
 import com.final_work_spring_boot.exception.BusinessException;
 import com.final_work_spring_boot.mapper.ProductMapper;
 import com.final_work_spring_boot.model.Brand;
@@ -22,7 +26,7 @@ import com.final_work_spring_boot.repository.IProductRepository;
 import com.final_work_spring_boot.service.IGenericService;
 
 @Service
-public class ProductService implements IGenericService<ProductDTO> {
+public class ProductService implements IProductService {
 
     @Autowired
     private IProductRepository repository;
@@ -36,46 +40,30 @@ public class ProductService implements IGenericService<ProductDTO> {
     @Autowired
     private ICategoryRepository categoryRepo;
 
+    // todo: get the product list with is_active = false;
     @Override
     @Transactional(readOnly = true)
-    public List<ProductDTO> getAll() {
-        return repository.findAll().stream()
+    public List<ProductResponseDTO> getRecordsList() {
+        return repository.findAllByStatus(true).stream()
                 .map(ProductMapper::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ProductDTO getById(Long id) {
-        return repository.findById(id).map(ProductMapper::toDTO)
+    public ProductResponseDTO getRecordById(Long id) {
+        return repository.findByIdAndStatus(id, true).map(ProductMapper::toDTO)
                 .orElseThrow(() -> new NotFoundException("Product whit ID: " + id + " NOT FOUND."));
     }
 
     @Override
-    public ProductDTO save(ProductDTO dto) {
+    public ProductResponseDTO saveRecord(ProductCreateDTO dto) {
 
-        // todo: SYNTACTIC VALIDATION: it will be replace with @valid
-        if (dto == null)
-            throw new BadRequestException("PRODUCT cannot be null");
+        String existingCodeSKU = dto.getInventory().getCodeSKU().toUpperCase().trim();
 
-        if (dto.getInventory() == null)
-            throw new BadRequestException("ID INVENTORY cannot be null");
-
-        if (dto.getIdBrand() == null)
-            throw new BadRequestException("ID BRAND cannot be null");
-
-        if (dto.getIdCategory() == null)
-            throw new BadRequestException("ID CATEGORY cannot be null");
-
-        // Make sure the INVENTORY ID it's not assigned to another products.
-        if (repository.existsByInventoryId(dto.getInventory().getId()))
+        if (inventoryRepo.existsByCodeSKU(existingCodeSKU))
             throw new BusinessException(
-                    "The Inventory (SKU) with ID " + dto.getInventory().getId()
+                    "The Inventory (SKU) with name " + existingCodeSKU
                             + " is already assigned to another product.");
-
-        // FIND : Inventory, Brand , Category
-        Inventory existingInventory = inventoryRepo.findById(dto.getInventory().getId())
-                .orElseThrow(() -> new NotFoundException(
-                        "Product whit ID INVENTORY: " + dto.getInventory().getId() + " NOT FOUND."));
 
         Brand existingBrand = brandRepo.findById(dto.getIdBrand())
                 .orElseThrow(() -> new NotFoundException(
@@ -85,60 +73,51 @@ public class ProductService implements IGenericService<ProductDTO> {
                 .orElseThrow(() -> new NotFoundException(
                         "Product whit ID CATEGORY: " + dto.getIdCategory() + " NOT FOUND."));
 
-        // There's no validation because MANY PRODUCTS CAN HAVE THE SAME NAME.
-        Product product = ProductMapper.toEntity(dto, existingInventory, existingBrand, existingCategory);
+        Inventory newInventory = InventoryMapper.toEntity(dto.getInventory());
+
+        Product product = ProductMapper.toEntity(dto, newInventory, existingBrand, existingCategory);
 
         return ProductMapper.toDTO(repository.save(product));
     }
 
     @Override
-    public ProductDTO update(ProductDTO dto, Long id) {
+    public ProductResponseDTO updateRecord(Long id, ProductUpdateDTO dto) {
 
-        Product existingProduct = repository.findById(id).orElse(null);
+        Product existingProduct = repository.findByIdAndStatus(id, true).orElse(null);
 
         if (existingProduct == null)
             throw new NotFoundException("Product whit ID: " + id + " NOT FOUND.");
 
-        // if the dto has a new relations , we looked it.
-
-        Inventory inventory = null;
-
-        if (dto.getInventory().getId() != null && existingProduct.getInventory().getId().equals(dto.getId())) {
-            // Make sure the INVENTORY ID it's not assigned to another products.
-            if (repository.existsByInventoryId(dto.getInventory().getId()))
-                throw new BusinessException(
-                        "The Inventory (SKU) with ID " + dto.getInventory().getId()
-                                + " is already assigned to another product.");
-
-            inventory = inventoryRepo.findById(dto.getInventory().getId())
-                    .orElseThrow(() -> new NotFoundException(
-                            "Product whit ID INVENTORY: " + dto.getInventory().getId() + " NOT FOUND."));
+        if (dto.getInventory() != null && dto.getInventory().getStock() != null) {
+            // work directly with the object in memory
+            existingProduct.getInventory().setStock(dto.getInventory().getStock());
         }
 
-        Brand brand = null;
+        Brand existingBrand = existingProduct.getBrand();
+
         if (dto.getIdBrand() != null)
-            brand = brandRepo.findById(dto.getIdBrand())
+            existingBrand = brandRepo.findById(dto.getIdBrand())
                     .orElseThrow(() -> new NotFoundException(
-                            "Product whit ID BRAND: " + dto.getIdBrand() + " NOT FOUND."));
+                            "Product whit ID BRAND: " + dto.getIdBrand() + " not found."));
 
-        Category category = null;
+        Category existingCategory = existingProduct.getCategory();
         if (dto.getIdCategory() != null)
-            category = categoryRepo.findById(dto.getIdCategory())
+            existingCategory = categoryRepo.findById(dto.getIdCategory())
                     .orElseThrow(() -> new NotFoundException(
-                            "Product whit ID CATEGORY: " + dto.getIdCategory() + " NOT FOUND."));
+                            "Product whit ID CATEGORY: " + dto.getIdCategory() + " not found."));
 
-        ProductMapper.updateEntity(existingProduct, dto, inventory, brand, category);
+        ProductMapper.updateEntity(existingProduct, dto , existingBrand, existingCategory);
 
         return ProductMapper.toDTO(repository.save(existingProduct));
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
             throw new NotFoundException("Product whit ID: " + id + " NOT FOUND.");
 
-        repository.logicDeleteById(id);
-        return true;
-    }
+        int result = repository.softDeleteById(id);
 
+        return result == 1; // ? true : false;
+    }
 }

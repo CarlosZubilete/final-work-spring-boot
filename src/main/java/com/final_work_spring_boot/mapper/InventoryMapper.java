@@ -1,22 +1,22 @@
 package com.final_work_spring_boot.mapper;
 
-import com.final_work_spring_boot.dto.InventoryDTO;
+import com.final_work_spring_boot.dto.request.inventory.InventoryCreateDTO;
 import com.final_work_spring_boot.model.Inventory;
 
 public class InventoryMapper {
 
-    public static InventoryDTO toDTO(Inventory inventory) {
+    public static InventoryCreateDTO toDTO(Inventory inventory) {
         if (inventory == null)
             return null;
 
-        return InventoryDTO.builder()
+        return InventoryCreateDTO.builder()
                 .id(inventory.getId())
                 .codeSKU(inventory.getCodeSKU())
                 .stock(inventory.getStock())
                 .build();
     }
 
-    public static Inventory toEntity(InventoryDTO dto) {
+    public static Inventory toEntity(InventoryCreateDTO dto) {
         if (dto == null)
             return null;
 
@@ -26,7 +26,7 @@ public class InventoryMapper {
                 .build();
     }
 
-    public static void updateEntity(Inventory inventory, InventoryDTO dto) {
+    public static void updateEntity(Inventory inventory, InventoryCreateDTO dto) {
         if (dto == null)
             return;
 

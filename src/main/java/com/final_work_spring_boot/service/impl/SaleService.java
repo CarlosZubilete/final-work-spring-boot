@@ -50,7 +50,7 @@ public class SaleService implements IGenericService<SaleDTO> {
     @Transactional(readOnly = true)
     public SaleDTO getById(Long id) {
         return repository.findById(id).map(SaleMapper::toDTO)
-                .orElseThrow(() -> new NotFoundException("Sale whit ID: " + id + " NOT FOUND."));
+                .orElseThrow(() -> new NotFoundException("Sale with ID: " + id + " NOT FOUND."));
     }
 
     @Override
@@ -67,11 +67,11 @@ public class SaleService implements IGenericService<SaleDTO> {
 
         // Find the Client and StateSale
         Client existingClient = clientRepo.findById(dto.getIdClient())
-                .orElseThrow(() -> new NotFoundException("Client whit id: " + dto.getIdClient() + " not found."));
+                .orElseThrow(() -> new NotFoundException("Client with id: " + dto.getIdClient() + " not found."));
 
         StateSale existingSaleState = stateSaleRepo.findById(dto.getIdStateSale())
                 .orElseThrow(
-                        () -> new NotFoundException("State Sale whit id: " + dto.getIdStateSale() + " not found."));
+                        () -> new NotFoundException("State Sale with id: " + dto.getIdStateSale() + " not found."));
 
         // Build the sale
         Sale sale = SaleMapper.toEntity(dto, existingClient, existingSaleState);
@@ -93,7 +93,7 @@ public class SaleService implements IGenericService<SaleDTO> {
         sale.setDetails(details);
 
         Double total = details.stream()
-                .mapToDouble(detail -> detail.getQuantity() * detail.getQuantity())
+                .mapToDouble(detail -> detail.getQuantity() * detail.getUnitPrice())
                 .sum();
 
         sale.setTotal(total);

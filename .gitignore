@@ -32,5 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 
-## java-unit-test
-src/test/
+
