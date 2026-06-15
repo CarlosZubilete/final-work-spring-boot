@@ -2,11 +2,14 @@ package com.final_work_spring_boot.service.impl;
 
 import java.util.List;
 
+import com.final_work_spring_boot.dto.request.brand.BrandUpdateDTO;
+import com.final_work_spring_boot.dto.response.BrandResponseDTO;
+import com.final_work_spring_boot.service.IBrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.final_work_spring_boot.dto.BrandDTO;
+import com.final_work_spring_boot.dto.request.brand.BrandCreateDTO;
 import com.final_work_spring_boot.exception.BusinessException;
 import com.final_work_spring_boot.exception.NotFoundException;
 import com.final_work_spring_boot.mapper.BrandMapper;
@@ -15,52 +18,50 @@ import com.final_work_spring_boot.repository.IBranRepository;
 import com.final_work_spring_boot.service.IGenericService;
 
 @Service
-public class BrandService implements IGenericService<BrandDTO> {
+public class BrandService implements IBrandService {
 
     @Autowired
     private IBranRepository repository;
 
     @Override
     @Transactional(readOnly = true)
-    public List<BrandDTO> getAll() {
+    public List<BrandResponseDTO> getRecordsList() {
         return repository.findAll().stream()
                 .map(BrandMapper::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public BrandDTO getById(Long id) {
+    public BrandResponseDTO getRecordById(Long id) {
         return repository.findById(id).map(BrandMapper::toDTO)
-                .orElseThrow(() -> new NotFoundException("Brand with ID: " + id + "NOT FOUND."));
+                .orElseThrow(() -> new NotFoundException("Brand with this id: " + id + " not found."));
     }
 
     @Override
-    public BrandDTO save(BrandDTO dto) {
-        String isExistingName = dto.getName().toUpperCase().trim();
+    public BrandResponseDTO saveRecord(BrandCreateDTO dto) {
 
-        Brand isRepeatedBrand = repository.findByName(isExistingName).orElse(null);
-
-        if (isRepeatedBrand != null)
-            throw new BusinessException("Brand with name: " + isExistingName + " ALREADY EXISTS.");
+        String existingName = dto.getName().toUpperCase().trim();
+        if (repository.existsByName(existingName))
+            throw new BusinessException("Brand with this name: " + existingName + " already exits.");
 
         Brand brand = BrandMapper.toEntity(dto);
 
         return BrandMapper.toDTO(repository.save(brand));
-
     }
 
     @Override
-    public BrandDTO update(BrandDTO dto, Long id) {
+    public BrandResponseDTO updateRecord(Long id, BrandUpdateDTO dto) {
 
         Brand existingBrand = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Brand with ID: " + id + "NOT FOUND."));
+                .orElseThrow(() -> new NotFoundException("Brand with this id: " + id + " not found."));
 
-        String isExistingName = dto.getName().toUpperCase().trim();
 
-        Brand isRepeatedBrand = repository.findByName(isExistingName).orElse(null);
+        if (dto.getName() != null) {
+            String newName = dto.getName().toUpperCase().trim();
 
-        if (isRepeatedBrand != null)
-            throw new BusinessException("Brand with name: " + isExistingName + " ALREADY EXISTS.");
+            if (repository.existsByName(newName))
+                throw new BusinessException("Brand with this name: " + newName + " already exists.");
+        }
 
         BrandMapper.updateEntity(existingBrand, dto);
 
@@ -68,9 +69,9 @@ public class BrandService implements IGenericService<BrandDTO> {
     }
 
     @Override
-    public boolean delete(Long id) {
-        if(!repository.existsById(id))
-            throw new NotFoundException("Brand with ID: " + id + "NOT FOUND.");
+    public boolean deleteRecord(Long id) {
+        if (!repository.existsById(id))
+            throw new NotFoundException("Brand with this id: " + id + " not found.");
 
         repository.deleteById(id);
         return true;

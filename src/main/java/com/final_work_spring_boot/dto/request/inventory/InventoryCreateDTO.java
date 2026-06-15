@@ -16,10 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class InventoryCreateDTO {
-    private Long id;
-
     @NotBlank(message = "codeSKU cannot be empty")
-    // todo:
     @Size(max = 9, min = 8, message = "codeSKU must be 8 characters")
     private String codeSKU;
 

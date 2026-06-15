@@ -1,21 +1,23 @@
 package com.final_work_spring_boot.mapper;
 
-import com.final_work_spring_boot.dto.BrandDTO;
+import com.final_work_spring_boot.dto.request.brand.BrandCreateDTO;
+import com.final_work_spring_boot.dto.request.brand.BrandUpdateDTO;
+import com.final_work_spring_boot.dto.response.BrandResponseDTO;
 import com.final_work_spring_boot.model.Brand;
 
 public class BrandMapper {
 
-    public static BrandDTO toDTO(Brand brand) {
+    public static BrandResponseDTO toDTO(Brand brand) {
         if (brand == null)
             return null;
 
-        return BrandDTO.builder()
+        return BrandResponseDTO.builder()
                 .id(brand.getId())
                 .name(brand.getName())
                 .build();
     }
 
-    public static Brand toEntity(BrandDTO dto) {
+    public static Brand toEntity(BrandCreateDTO dto) {
         if (dto == null)
             return null;
 
@@ -24,7 +26,7 @@ public class BrandMapper {
                 .build();
     }
 
-    public static void updateEntity(Brand brand, BrandDTO dto) {
+    public static void updateEntity(Brand brand, BrandUpdateDTO dto) {
         if (dto == null)
             return;
 

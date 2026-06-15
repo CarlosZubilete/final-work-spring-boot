@@ -29,5 +29,4 @@ public class ProductUpdateDTO {
     private Long idBrand;
 
     private Long idCategory;
-
 }
