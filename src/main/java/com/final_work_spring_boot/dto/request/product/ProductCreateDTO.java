@@ -21,8 +21,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class ProductCreateDTO {
-    private Long id;
-
     @NotBlank(message = "name cannot be blank")
     @Size(min = 3, max = 50, message = "name must be between 3 and 50 characters")
     private String name;
@@ -45,7 +43,5 @@ public class ProductCreateDTO {
     @NotNull(message = "idCategory is required")
     private Long idCategory;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private Boolean isActive;
 }

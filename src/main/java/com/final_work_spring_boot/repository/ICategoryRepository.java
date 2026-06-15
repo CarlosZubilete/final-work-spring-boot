@@ -10,4 +10,8 @@ import com.final_work_spring_boot.model.Category;
 @Repository
 public interface ICategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findByName(String name);
+
+    boolean existsByName(String name);
 }
+// findBy -> return the entity
+// existsBy -> return a boolean

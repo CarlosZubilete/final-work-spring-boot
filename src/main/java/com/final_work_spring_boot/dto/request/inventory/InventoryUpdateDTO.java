@@ -10,6 +10,8 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class InventoryUpdateDTO {
+    private Long id;
+
     @PositiveOrZero(message = "stock must be positive or zero")
     private Integer stock;
 }

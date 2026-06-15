@@ -28,13 +28,13 @@ public class StateSaleService implements IGenericService<StateSaleDTO> {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public StateSaleDTO getById(Long id) {
         return repository.findById(id).map(StateSaleMapper::toDTO)
                 .orElseThrow(() -> new NotFoundException("State Sale with ID: " + id + " not found."));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public StateSaleDTO save(StateSaleDTO dto) {
         String isExistingName = dto.getName().toLowerCase().trim();
 

@@ -2,11 +2,14 @@ package com.final_work_spring_boot.service.impl;
 
 import java.util.List;
 
+import com.final_work_spring_boot.dto.request.category.CategoryUpdateDTO;
+import com.final_work_spring_boot.dto.response.CategoryResponseDTO;
+import com.final_work_spring_boot.service.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.final_work_spring_boot.dto.CategoryDTO;
+import com.final_work_spring_boot.dto.request.category.CategoryCreateDTO;
 import com.final_work_spring_boot.exception.BusinessException;
 import com.final_work_spring_boot.exception.NotFoundException;
 import com.final_work_spring_boot.mapper.CategoryMapper;
@@ -15,34 +18,32 @@ import com.final_work_spring_boot.repository.ICategoryRepository;
 import com.final_work_spring_boot.service.IGenericService;
 
 @Service
-public class CategoryService implements IGenericService<CategoryDTO> {
+public class CategoryService implements ICategoryService {
 
     @Autowired
     private ICategoryRepository repository;
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryDTO> getAll() {
+    public List<CategoryResponseDTO> getRecordsList() {
         return repository.findAll().stream()
                 .map(CategoryMapper::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public CategoryDTO getById(Long id) {
+    public CategoryResponseDTO getRecordById(Long id) {
         return repository.findById(id).map(CategoryMapper::toDTO)
-                .orElseThrow(() -> new NotFoundException("Category whit ID: " + id + " NOT FOUND"));
+                .orElseThrow(() -> new NotFoundException("Category whit this id: " + id + " not found."));
     }
 
     @Override
-    public CategoryDTO save(CategoryDTO dto) {
+    public CategoryResponseDTO saveRecord(CategoryCreateDTO dto) {
 
         String isExistingName = dto.getName().toUpperCase().trim();
 
-        Category isRepeatedCategory = repository.findByName(isExistingName).orElse(null);
-
-        if (isRepeatedCategory != null)
-            throw new BusinessException("Category whit name: " + isExistingName + " ALREADY EXISTS.");
+        if (repository.existsByName(isExistingName))
+            throw new BusinessException("Category whit this name: " + isExistingName + " already exists.");
 
         Category category = CategoryMapper.toEntity(dto);
 
@@ -50,17 +51,16 @@ public class CategoryService implements IGenericService<CategoryDTO> {
     }
 
     @Override
-    public CategoryDTO update(CategoryDTO dto, Long id) {
+    public CategoryResponseDTO updateRecord(Long id, CategoryUpdateDTO dto) {
 
         Category existingCategory = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category whit ID: " + id + " NOT FOUND"));
 
-        String isExistingName = dto.getName().toUpperCase().trim();
-
-        Category isRepeatedCategory = repository.findByName(isExistingName).orElse(null);
-
-        if (isRepeatedCategory != null)
-            throw new BusinessException("Category whit name: " + isExistingName + " ALREADY EXISTS.");
+        if (dto.getName() != null) {
+            String newName = dto.getName().toUpperCase().trim();
+            if (repository.existsByName(newName))
+                throw new BusinessException("Category whit this name: " + newName + " already exists.");
+        }
 
         CategoryMapper.updateEntity(existingCategory, dto);
 
@@ -68,7 +68,7 @@ public class CategoryService implements IGenericService<CategoryDTO> {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
             throw new NotFoundException("Category whit ID: " + id + " NOT FOUND");
 

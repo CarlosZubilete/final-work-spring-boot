@@ -10,5 +10,9 @@ import com.final_work_spring_boot.model.Brand;
 @Repository
 public interface IBranRepository extends JpaRepository<Brand, Long> {
     Optional<Brand> findByName(String name);
+
+    boolean existsByName(String name);
 }
 
+// findBy -> return the entity
+// existsBy -> return a boolean

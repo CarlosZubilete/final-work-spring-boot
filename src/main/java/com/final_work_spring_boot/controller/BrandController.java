@@ -2,6 +2,9 @@ package com.final_work_spring_boot.controller;
 
 import java.util.List;
 
+import com.final_work_spring_boot.dto.request.brand.BrandUpdateDTO;
+import com.final_work_spring_boot.dto.response.BrandResponseDTO;
+import com.final_work_spring_boot.service.IBrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.final_work_spring_boot.dto.BrandDTO;
+import com.final_work_spring_boot.dto.request.brand.BrandCreateDTO;
 import com.final_work_spring_boot.service.IGenericService;
 
 import jakarta.validation.Valid;
@@ -24,11 +27,11 @@ import jakarta.validation.Valid;
 public class BrandController {
 
     @Autowired
-    private IGenericService<BrandDTO> service;
+    private IBrandService service;
 
     @GetMapping("/")
-    public ResponseEntity<List<BrandDTO>> getBrandList() {
-        List<BrandDTO> brands = service.getAll();
+    public ResponseEntity<List<BrandResponseDTO>> getBrandList() {
+        List<BrandResponseDTO> brands = service.getRecordsList();
 
         return brands != null
                 ? ResponseEntity.ok(brands)
@@ -36,29 +39,29 @@ public class BrandController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BrandDTO> getBrandById(@PathVariable Long id) {
-        BrandDTO brand = service.getById(id);
+    public ResponseEntity<BrandResponseDTO> getBrandById(@PathVariable Long id) {
+        BrandResponseDTO brand = service.getRecordById(id);
         return ResponseEntity.ok(brand);
     }
 
     @PostMapping("/")
-    public ResponseEntity<BrandDTO> saveBrand(@Valid @RequestBody BrandDTO dto) {
-        BrandDTO saved = service.save(dto);
+    public ResponseEntity<BrandResponseDTO> saveBrand(@Valid @RequestBody BrandCreateDTO dto) {
+        BrandResponseDTO saved = service.saveRecord(dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BrandDTO> updateBrand(@PathVariable Long id,
-                                                @RequestBody BrandDTO dto) {
-        BrandDTO updated = service.update(dto, id);
+    public ResponseEntity<BrandResponseDTO> updateBrand(@PathVariable Long id,
+                                                        @Valid @RequestBody BrandUpdateDTO dto) {
+        BrandResponseDTO updated = service.updateRecord(id, dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteBrand(@PathVariable Long id) {
-        boolean deleted = service.delete(id);
+        boolean deleted = service.deleteRecord(id);
 
         return deleted
                 ? ResponseEntity.noContent().build()

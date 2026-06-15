@@ -1,21 +1,23 @@
 package com.final_work_spring_boot.mapper;
 
-import com.final_work_spring_boot.dto.CategoryDTO;
+import com.final_work_spring_boot.dto.request.category.CategoryCreateDTO;
+import com.final_work_spring_boot.dto.request.category.CategoryUpdateDTO;
+import com.final_work_spring_boot.dto.response.CategoryResponseDTO;
 import com.final_work_spring_boot.model.Category;
 
 public class CategoryMapper {
 
-    public static CategoryDTO toDTO(Category category) {
+    public static CategoryResponseDTO toDTO(Category category) {
         if (category == null)
             return null;
 
-        return CategoryDTO.builder()
+        return CategoryResponseDTO.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .build();
     }
 
-    public static Category toEntity(CategoryDTO dto) {
+    public static Category toEntity(CategoryCreateDTO dto) {
         if (dto == null)
             return null;
 
@@ -24,7 +26,7 @@ public class CategoryMapper {
                 .build();
     }
 
-    public static void updateEntity(Category category, CategoryDTO dto) {
+    public static void updateEntity(Category category, CategoryUpdateDTO dto) {
         if (dto == null)
             return;
 

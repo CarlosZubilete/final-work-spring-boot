@@ -1,15 +1,17 @@
 package com.final_work_spring_boot.mapper;
 
 import com.final_work_spring_boot.dto.request.inventory.InventoryCreateDTO;
+import com.final_work_spring_boot.dto.request.inventory.InventoryUpdateDTO;
+import com.final_work_spring_boot.dto.response.InventoryResponseDTO;
 import com.final_work_spring_boot.model.Inventory;
 
 public class InventoryMapper {
 
-    public static InventoryCreateDTO toDTO(Inventory inventory) {
+    public static InventoryResponseDTO toDTO(Inventory inventory) {
         if (inventory == null)
             return null;
 
-        return InventoryCreateDTO.builder()
+        return InventoryResponseDTO.builder()
                 .id(inventory.getId())
                 .codeSKU(inventory.getCodeSKU())
                 .stock(inventory.getStock())

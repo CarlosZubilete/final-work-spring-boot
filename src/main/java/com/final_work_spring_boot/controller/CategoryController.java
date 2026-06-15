@@ -2,7 +2,10 @@ package com.final_work_spring_boot.controller;
 
 import java.util.List;
 
-import com.final_work_spring_boot.dto.CategoryDTO;
+import com.final_work_spring_boot.dto.request.category.CategoryCreateDTO;
+import com.final_work_spring_boot.dto.request.category.CategoryUpdateDTO;
+import com.final_work_spring_boot.dto.response.CategoryResponseDTO;
+import com.final_work_spring_boot.service.ICategoryService;
 import com.final_work_spring_boot.service.IGenericService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,11 +27,11 @@ import jakarta.validation.Valid;
 public class CategoryController {
 
     @Autowired
-    private IGenericService<CategoryDTO> service;
+    private ICategoryService service;
 
     @GetMapping("/")
-    public ResponseEntity<List<CategoryDTO>> getCategoryList() {
-        List<CategoryDTO> brandList = service.getAll();
+    public ResponseEntity<List<CategoryResponseDTO>> getCategoryList() {
+        List<CategoryResponseDTO> brandList = service.getRecordsList();
 
         return brandList != null
                 ? ResponseEntity.ok(brandList)
@@ -36,29 +39,29 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long id) {
-        CategoryDTO category = service.getById(id);
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
+        CategoryResponseDTO category = service.getRecordById(id);
         return ResponseEntity.ok(category);
     }
 
     @PostMapping("/")
-    public ResponseEntity<CategoryDTO> saveCategory(@Valid @RequestBody CategoryDTO dto) {
-        CategoryDTO saved = service.save(dto);
+    public ResponseEntity<CategoryResponseDTO> saveCategory(@Valid @RequestBody CategoryCreateDTO dto) {
+        CategoryResponseDTO saved = service.saveRecord(dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id,
-                                                      @RequestBody CategoryDTO dto) {
-        CategoryDTO updated = service.update(dto, id);
+    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable Long id,
+                                                              @RequestBody CategoryUpdateDTO dto) {
+        CategoryResponseDTO updated = service.updateRecord(id, dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteCategory(@PathVariable Long id) {
-        boolean deleted = service.delete(id);
+        boolean deleted = service.deleteRecord(id);
 
         return deleted
                 ? ResponseEntity.noContent().build()
