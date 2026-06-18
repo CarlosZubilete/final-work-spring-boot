@@ -3,14 +3,19 @@ package com.final_work_spring_boot.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.final_work_spring_boot.dto.request.sale.SaleCreateDTO;
+import com.final_work_spring_boot.dto.request.sale.SaleUpdateDTO;
+import com.final_work_spring_boot.dto.response.SaleResponseDTO;
+import com.final_work_spring_boot.exception.BusinessException;
+import com.final_work_spring_boot.repository.*;
+import com.final_work_spring_boot.service.ISaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.final_work_spring_boot.dto.SaleDTO;
 import com.final_work_spring_boot.dto.DetailDTO;
 import com.final_work_spring_boot.exception.NotFoundException;
-import com.final_work_spring_boot.exception.BadRequestException;
+
 import com.final_work_spring_boot.mapper.DetailMapper;
 import com.final_work_spring_boot.mapper.SaleMapper;
 import com.final_work_spring_boot.model.Client;
@@ -18,14 +23,10 @@ import com.final_work_spring_boot.model.Product;
 import com.final_work_spring_boot.model.Sale;
 import com.final_work_spring_boot.model.Detail;
 import com.final_work_spring_boot.model.StateSale;
-import com.final_work_spring_boot.repository.IClientRepository;
-import com.final_work_spring_boot.repository.IProductRepository;
-import com.final_work_spring_boot.repository.ISaleRepository;
-import com.final_work_spring_boot.repository.IStateSaleRepository;
-import com.final_work_spring_boot.service.IGenericService;
+
 
 @Service
-public class SaleService implements IGenericService<SaleDTO> {
+public class SaleService implements ISaleService {
 
     @Autowired
     private ISaleRepository repository;
@@ -39,39 +40,34 @@ public class SaleService implements IGenericService<SaleDTO> {
     @Autowired
     private IProductRepository productRepo;
 
+    @Autowired
+    private IDetailRepository detailRepos;
+
     @Override
     @Transactional(readOnly = true)
-    public List<SaleDTO> getAll() {
+    public List<SaleResponseDTO> getRecordsList() {
         return repository.findAll().stream()
-                .map(SaleMapper::toDTO).toList();
+            .map(SaleMapper::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SaleDTO getById(Long id) {
+    public SaleResponseDTO getRecordById(Long id) {
         return repository.findById(id).map(SaleMapper::toDTO)
-                .orElseThrow(() -> new NotFoundException("Sale with ID: " + id + " NOT FOUND."));
+            .orElseThrow(() -> new NotFoundException("Sale with this id: " + id + " not found."));
     }
 
     @Override
-    public SaleDTO save(SaleDTO dto) {
-        // todo : SYNTACTIC VALIDATION : it will be replace with @valid
-        if (dto == null)
-            throw new BadRequestException("Sale cannot be null");
-        if (dto.getIdClient() == null)
-            throw new BadRequestException("Client id cannot be null");
-        if (dto.getIdStateSale() == null)
-            throw new BadRequestException("State Sale id cannot be null");
-        if (dto.getDetails() == null)
-            throw new BadRequestException("At least one product must be included in the sale");
+    public SaleResponseDTO saveRecord(SaleCreateDTO dto) {
 
         // Find the Client and StateSale
         Client existingClient = clientRepo.findById(dto.getIdClient())
-                .orElseThrow(() -> new NotFoundException("Client with id: " + dto.getIdClient() + " not found."));
+            .orElseThrow(() -> new NotFoundException("Client with this id: " + dto.getIdClient() + " not found."));
 
+        // Find the StateSale
         StateSale existingSaleState = stateSaleRepo.findById(dto.getIdStateSale())
-                .orElseThrow(
-                        () -> new NotFoundException("State Sale with id: " + dto.getIdStateSale() + " not found."));
+            .orElseThrow(
+                () -> new NotFoundException("State Sale with id: " + dto.getIdStateSale() + " not found."));
 
         // Build the sale
         Sale sale = SaleMapper.toEntity(dto, existingClient, existingSaleState);
@@ -81,8 +77,8 @@ public class SaleService implements IGenericService<SaleDTO> {
         for (DetailDTO detailDTO : dto.getDetails()) {
 
             Product product = productRepo.findById(detailDTO.getIdProduct())
-                    .orElseThrow(() -> new NotFoundException(
-                            "Product with id: " + detailDTO.getIdProduct() + " not found."));
+                .orElseThrow(() -> new NotFoundException(
+                    "Product with id: " + detailDTO.getIdProduct() + " not found."));
 
             Detail detail = DetailMapper.toEntity(detailDTO, product, sale);
 
@@ -93,8 +89,8 @@ public class SaleService implements IGenericService<SaleDTO> {
         sale.setDetails(details);
 
         Double total = details.stream()
-                .mapToDouble(detail -> detail.getQuantity() * detail.getUnitPrice())
-                .sum();
+            .mapToDouble(detail -> detail.getQuantity() * detail.getUnitPrice())
+            .sum();
 
         sale.setTotal(total);
 
@@ -103,19 +99,75 @@ public class SaleService implements IGenericService<SaleDTO> {
     }
 
     @Override
-    public SaleDTO update(SaleDTO dto, Long id) {
+    public SaleResponseDTO updateRecord(Long id, SaleUpdateDTO dto) {
 
         Sale existingSale = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Sale whit ID: " + id + " NOT FOUND."));
+            .orElseThrow(() -> new NotFoundException("Sale whit this id: " + id + " not found."));
 
-        Client existingClient = clientRepo.findById(dto.getIdClient())
-                .orElseThrow(() -> new NotFoundException("Client whit ID: " + dto.getIdClient() + " NOT FOUND."));
+        // Update Client
+        Client existingClient = null;
+        if (dto.getIdClient() != null) {
+            existingClient = clientRepo.findById(dto.getIdClient()).orElseThrow(
+                () -> new NotFoundException("Client whit this id: " + dto.getIdClient() + " not found."));
+        }
 
-        StateSale existingStateSale = stateSaleRepo.findById(dto.getIdStateSale())
+        // Update StateSale
+        StateSale existingStateSale = null;
+        if (dto.getIdStateSale() != null) {
+            existingStateSale = stateSaleRepo.findById(dto.getIdStateSale())
                 .orElseThrow(
-                        () -> new NotFoundException("State Sale whit ID: " + dto.getIdStateSale() + " NOT FOUND."));
+                    () -> new NotFoundException("State Sale whit this id: " + dto.getIdStateSale() + " not found."));
+        }
 
-        // todo: If I have update the a specific details.
+        List<Detail> updateDetails = new ArrayList<>();
+        if (dto.getDetails() != null) {
+            // Make sure if the state sale allows update
+            boolean isPending;
+            if (existingStateSale != null) {
+                isPending = existingStateSale.getName().equals("pending");
+            } else {
+                isPending = existingSale.getStateSale().getName().equals("pending");
+            }
+
+            if (!isPending)
+                throw new BusinessException("Only sales with a 'pending' status can be updated.");
+
+            Detail detail;
+            for (DetailDTO detailDTO : dto.getDetails()) {
+                if (detailDTO.getId() != null) {
+                    // Update existing detail
+                    detail = detailRepos.findById(detailDTO.getId())
+                        .orElseThrow(() -> new NotFoundException(
+                            "Detail with this id: " + detailDTO.getId() + " not found."));
+
+                    Product product = productRepo.findById(detailDTO.getIdProduct())
+                        .orElseThrow(() -> new NotFoundException(
+                            "Product with this id: " + detailDTO.getIdProduct() + " not found."));
+
+                    DetailMapper.updateEntity(detail, detailDTO, product);
+                } else {
+                    // Create new detail
+                    Product product = productRepo.findById(detailDTO.getIdProduct())
+                        .orElseThrow(() -> new NotFoundException(
+                            "Product with id: " + detailDTO.getIdProduct() + " not found."));
+
+                    detail = DetailMapper.toEntity(detailDTO, product, existingSale);
+                }
+
+                updateDetails.add(detail);
+            }
+
+            // Clean the current list
+            existingSale.getDetails().clear();
+            // Add the processed details
+            existingSale.getDetails().addAll(updateDetails);
+
+            Double total = updateDetails.stream()
+                .mapToDouble(det -> det.getQuantity() * det.getUnitPrice())
+                .sum();
+
+            existingSale.setTotal(total);
+        }
 
         SaleMapper.updateEntity(existingSale, dto, existingClient, existingStateSale);
 
@@ -123,12 +175,11 @@ public class SaleService implements IGenericService<SaleDTO> {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
             throw new NotFoundException("Sale whit ID: " + id + " NOT FOUND.");
 
         repository.deleteById(id);
         return true;
     }
-
 }

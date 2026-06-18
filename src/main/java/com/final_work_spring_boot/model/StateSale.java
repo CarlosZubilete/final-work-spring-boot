@@ -27,8 +27,10 @@ public class StateSale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_state")
     private Long id;
+
+    @Column(unique = true, length = 50)
     private String name;
-    
+
     // ONE stateSale may belongs to MANY sales
     @OneToMany(mappedBy = "stateSale")
     // 'stateSale' is the property's name of Product class.

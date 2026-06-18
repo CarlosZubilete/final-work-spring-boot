@@ -15,7 +15,6 @@ import com.final_work_spring_boot.exception.NotFoundException;
 import com.final_work_spring_boot.mapper.BrandMapper;
 import com.final_work_spring_boot.model.Brand;
 import com.final_work_spring_boot.repository.IBranRepository;
-import com.final_work_spring_boot.service.IGenericService;
 
 @Service
 public class BrandService implements IBrandService {

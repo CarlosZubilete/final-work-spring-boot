@@ -1,0 +1,54 @@
+[
+  {
+    "date": "2026-06-16",
+    "idClient": 1,
+    "idStateSale": 1,
+    "details": [
+      {
+        "idProduct": 1,
+        "quantity": 2,
+      },
+      {
+        "idProduct": 3,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "date": "2026-06-15",
+    "idClient": 2,
+    "idStateSale": 2,
+    "details": [
+      {
+        "idProduct": 4,
+        "quantity": 3
+      }
+    ]
+  },
+  {
+    "date": "2026-06-10",
+    "idClient": 1,
+    "idStateSale": 3,
+    "details": [
+      {
+        "idProduct": 5,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "date": "2026-06-10",
+    "idClient": 3,
+    "idStateSale": 2,
+    "details": [
+      {
+        "idProduct": 5,
+        "quantity": 5
+      },
+      {
+        "idProduct": 1,
+        "quantity": 2
+      }
+    ]
+  }
+]

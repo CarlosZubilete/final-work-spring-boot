@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.final_work_spring_boot.dto.request.brand.BrandCreateDTO;
-import com.final_work_spring_boot.service.IGenericService;
 
 import jakarta.validation.Valid;
 
@@ -34,8 +33,8 @@ public class BrandController {
         List<BrandResponseDTO> brands = service.getRecordsList();
 
         return brands != null
-                ? ResponseEntity.ok(brands)
-                : ResponseEntity.notFound().build();
+            ? ResponseEntity.ok(brands)
+            : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @GetMapping("/{id}")
@@ -45,10 +44,9 @@ public class BrandController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<BrandResponseDTO> saveBrand(@Valid @RequestBody BrandCreateDTO dto) {
-        BrandResponseDTO saved = service.saveRecord(dto);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    public ResponseEntity<BrandResponseDTO> createBrand(@Valid @RequestBody BrandCreateDTO dto) {
+        BrandResponseDTO created = service.saveRecord(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
@@ -62,10 +60,7 @@ public class BrandController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteBrand(@PathVariable Long id) {
         boolean deleted = service.deleteRecord(id);
-
-        return deleted
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
 }

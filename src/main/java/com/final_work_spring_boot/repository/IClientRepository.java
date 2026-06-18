@@ -1,6 +1,5 @@
 package com.final_work_spring_boot.repository;
 
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,7 +15,10 @@ public interface IClientRepository extends JpaRepository<Client, Long> {
     @Query("UPDATE Client cli SET cli.isActive = false WHERE cli.id = :id ")
     void logicDeleteById(@Param("id") Long id);
 
-    Optional<Client> findByDocument(String document);
+    boolean existsByDocument(String document);
 
-    Optional<Client> findByEmail(String email);
+    boolean existsByEmail(String email);
 }
+
+// findBy -> return the entity
+// existsBy -> return a boolean

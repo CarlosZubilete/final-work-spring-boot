@@ -6,7 +6,6 @@ import com.final_work_spring_boot.dto.request.category.CategoryCreateDTO;
 import com.final_work_spring_boot.dto.request.category.CategoryUpdateDTO;
 import com.final_work_spring_boot.dto.response.CategoryResponseDTO;
 import com.final_work_spring_boot.service.ICategoryService;
-import com.final_work_spring_boot.service.IGenericService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +33,8 @@ public class CategoryController {
         List<CategoryResponseDTO> brandList = service.getRecordsList();
 
         return brandList != null
-                ? ResponseEntity.ok(brandList)
-                : ResponseEntity.notFound().build();
+            ? ResponseEntity.ok(brandList)
+            : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @GetMapping("/{id}")
@@ -45,10 +44,9 @@ public class CategoryController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<CategoryResponseDTO> saveCategory(@Valid @RequestBody CategoryCreateDTO dto) {
-        CategoryResponseDTO saved = service.saveRecord(dto);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CategoryCreateDTO dto) {
+        CategoryResponseDTO created = service.saveRecord(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
@@ -62,10 +60,7 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteCategory(@PathVariable Long id) {
         boolean deleted = service.deleteRecord(id);
-
-        return deleted
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
 }

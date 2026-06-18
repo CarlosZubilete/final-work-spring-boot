@@ -12,12 +12,23 @@ public class DetailMapper {
             return null;
 
         return Detail.builder()
-                .product(product)
-                // unit price may comes in dto, depends the logic.
-                .unitPrice(product.getPrice())
-                .quantity(dto.getQuantity())
-                .sale(sale)
-                .build();
+            .product(product)
+            // unit price may comes in dto, depends the logic.
+            .unitPrice(product.getPrice())
+            .quantity(dto.getQuantity())
+            .sale(sale)
+            .build();
 
+    }
+
+    public static void updateEntity(Detail existingDetail, DetailDTO dto, Product product) {
+        if (dto.getIdProduct() != null)
+            existingDetail.setProduct(product);
+
+        if (dto.getUnitPrice() != null)
+            existingDetail.setUnitPrice(product.getPrice());
+
+        if (dto.getQuantity() != null)
+            existingDetail.setQuantity(dto.getQuantity());
     }
 }

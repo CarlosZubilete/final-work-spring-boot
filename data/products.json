@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Royal Canin Mini Adult 7.5kg",
+    "description": "Alimento balanceado para perros adultos de tamaño pequeño (hasta 10 kg). Excelente palatabilidad.",
+    "price": 45000.0,
+    "inventory": {
+      "codeSKU": "ROYC0001",
+      "stock": 45
+    },
+    "idBrand": 1,
+    "idCategory": 1
+  },
+  {
+    "name": "Purina Pro Plan Gato Urinary 3kg",
+    "description": "Alimento para gatos adultos que ayuda a mantener la salud del sistema urinario y previene cálculos.",
+    "price": 24500.0,
+    "inventory": {
+      "codeSKU": "PURP0002",
+      "stock": 20
+    },
+    "idBrand": 2,
+    "idCategory": 1
+  },
+  {
+    "name": "KONG Classic Mediano",
+    "description": "Juguete de caucho natural superresistente para perros medianos. Ideal para rellenar con snacks.",
+    "price": 16200.0,
+    "inventory": {
+      "codeSKU": "KONG0003",
+      "stock": 100
+    },
+    "idBrand": 3,
+    "idCategory": 2
+  },
+  {
+    "name": "NexGard 10 a 25 kg",
+    "description": "Pastilla masticable antiparasitaria externa para perros de tamaño mediano. Caja por 3 comprimidos.",
+    "price": 19800.0,
+    "inventory": {
+      "codeSKU": "NEXG0004",
+      "stock": 15
+    },
+    "idBrand": 4,
+    "idCategory": 3
+  },
+  {
+    "name": "Whiskas Gatitos Carne 1.5kg",
+    "description": "Alimento seco balanceado para gatitos menores de un año sabor carne. Rico en calcio y proteínas.",
+    "price": 9500.0,
+    "inventory": {
+      "codeSKU": "WHIS0005",
+      "stock": 0
+    },
+    "idBrand": 5,
+    "idCategory": 1
+  },
+  {
+    "name": "Correa Retractil KONG Trail M",
+    "description": "Correa de cinta retráctil de 5 metros para perros de hasta 30kg. Mango ergonómico soft-grip.",
+    "price": 28900.0,
+    "inventory": {
+      "codeSKU": "KONG0006",
+      "stock": 8
+    },
+    "idBrand": 3,
+    "idCategory": 4
+  },
+  {
+    "name": "Purina Dog Chow Cachorros 1kg",
+    "description": "Alimento descontinuado temporalmente del catálogo por cambio en la presentación del proveedor.",
+    "price": 4800.0,
+    "inventory": {
+      "codeSKU": "PURP0007",
+      "stock": 12
+    },
+    "idBrand": 2,
+    "idCategory": 1
+  }
+]

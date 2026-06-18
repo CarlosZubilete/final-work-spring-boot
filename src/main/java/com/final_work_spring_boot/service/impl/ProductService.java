@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.final_work_spring_boot.dto.request.product.ProductUpdateDTO;
 import com.final_work_spring_boot.dto.response.ProductResponseDTO;
-import com.final_work_spring_boot.exception.BadRequestException;
 import com.final_work_spring_boot.mapper.InventoryMapper;
 import com.final_work_spring_boot.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ import com.final_work_spring_boot.repository.IBranRepository;
 import com.final_work_spring_boot.repository.ICategoryRepository;
 import com.final_work_spring_boot.repository.IInventoryRepository;
 import com.final_work_spring_boot.repository.IProductRepository;
-import com.final_work_spring_boot.service.IGenericService;
+
 
 @Service
 public class ProductService implements IProductService {
@@ -86,7 +85,7 @@ public class ProductService implements IProductService {
         Product existingProduct = repository.findByIdAndStatus(id, true).orElse(null);
 
         if (existingProduct == null)
-            throw new NotFoundException("Product whit ID: " + id + " NOT FOUND.");
+            throw new NotFoundException("Product whit this id: " + id + " not found.");
 
         if (dto.getInventory() != null && dto.getInventory().getStock() != null) {
             // work directly with the object in memory
@@ -114,7 +113,7 @@ public class ProductService implements IProductService {
     @Override
     public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
-            throw new NotFoundException("Product whit ID: " + id + " NOT FOUND.");
+            throw new NotFoundException("Product whit this id: " + id + " not found.");
 
         int result = repository.softDeleteById(id);
 

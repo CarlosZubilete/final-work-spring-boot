@@ -2,46 +2,47 @@ package com.final_work_spring_boot.service.impl;
 
 import java.util.List;
 
+import com.final_work_spring_boot.dto.request.statesale.StateSaleCreateDTO;
+import com.final_work_spring_boot.dto.request.statesale.StateSaleUpdateDTO;
+import com.final_work_spring_boot.dto.response.StateSaleResponseDTO;
+import com.final_work_spring_boot.service.IStateSale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.final_work_spring_boot.dto.StateSaleDTO;
 import com.final_work_spring_boot.exception.BusinessException;
 import com.final_work_spring_boot.exception.NotFoundException;
 import com.final_work_spring_boot.mapper.StateSaleMapper;
 import com.final_work_spring_boot.model.StateSale;
 import com.final_work_spring_boot.repository.IStateSaleRepository;
-import com.final_work_spring_boot.service.IGenericService;
+
 
 @Service
-public class StateSaleService implements IGenericService<StateSaleDTO> {
+public class StateSaleService implements IStateSale {
 
     @Autowired
     private IStateSaleRepository repository;
 
     @Override
     @Transactional(readOnly = true)
-    public List<StateSaleDTO> getAll() {
+    public List<StateSaleResponseDTO> getRecordsList() {
         return repository.findAll().stream()
-                .map(StateSaleMapper::toDTO).toList();
+            .map(StateSaleMapper::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public StateSaleDTO getById(Long id) {
+    public StateSaleResponseDTO getRecordById(Long id) {
         return repository.findById(id).map(StateSaleMapper::toDTO)
-                .orElseThrow(() -> new NotFoundException("State Sale with ID: " + id + " not found."));
+            .orElseThrow(() -> new NotFoundException("State Sale with this id: " + id + " not found."));
     }
 
     @Override
-    public StateSaleDTO save(StateSaleDTO dto) {
+    public StateSaleResponseDTO saveRecord(StateSaleCreateDTO dto) {
         String isExistingName = dto.getName().toLowerCase().trim();
 
-        StateSale isRepeatedSateSale = repository.findByName(isExistingName).orElse(null);
-
-        if (isRepeatedSateSale != null)
-            throw new BusinessException("State Sale with name: " + isExistingName + " already exists.");
+        if (repository.existsByName(isExistingName))
+            throw new BusinessException("State Sale with this name: " + isExistingName + " already exists.");
 
         StateSale stateSale = StateSaleMapper.toEntity(dto);
 
@@ -49,16 +50,15 @@ public class StateSaleService implements IGenericService<StateSaleDTO> {
     }
 
     @Override
-    public StateSaleDTO update(StateSaleDTO dto, Long id) {
+    public StateSaleResponseDTO updateRecord(Long id, StateSaleUpdateDTO dto) {
         StateSale existingStateSale = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("State Sale with ID: " + id + " not found."));
+            .orElseThrow(() -> new NotFoundException("State Sale with ID: " + id + " not found."));
 
         String isExistingName = dto.getName().toLowerCase().trim();
 
-        StateSale isRepeatedSateSale = repository.findByName(isExistingName).orElse(null);
+        if (repository.existsByName(isExistingName))
+            throw new BusinessException("State Sale with this name: " + isExistingName + " already exists.");
 
-        if (isRepeatedSateSale != null)
-            throw new BusinessException("State Sale with name: " + isExistingName + " already exists.");
 
         StateSaleMapper.updateEntity(existingStateSale, dto);
 
@@ -66,7 +66,7 @@ public class StateSaleService implements IGenericService<StateSaleDTO> {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
             throw new NotFoundException("State Sale with ID: " + id + " not found.");
 

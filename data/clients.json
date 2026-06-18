@@ -1,0 +1,23 @@
+[
+  {
+    "firstName": "Lionel",
+    "lastName": "Messi",
+    "document": "30123456",
+    "email": "lio.messi@example.com",
+    "phone": "1123456789"
+  },
+  {
+    "firstName": "Valeria",
+    "lastName": "Gomez",
+    "document": "38999888",
+    "email": "valeria.g@example.com",
+    "phone": "1155667788"
+  },
+  {
+    "firstName": "Marino",
+    "lastName": "Smith",
+    "document": "45789123",
+    "email": "mariano.s@example.com",
+    "phone": "1155669944"
+  }
+]

@@ -7,11 +7,12 @@ import com.final_work_spring_boot.dto.response.ProductResponseDTO;
 import com.final_work_spring_boot.service.IProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.final_work_spring_boot.dto.request.product.ProductCreateDTO;
-import com.final_work_spring_boot.service.IGenericService;
+
 
 @RestController
 @RequestMapping("api/products")
@@ -25,8 +26,8 @@ public class ProductController {
         List<ProductResponseDTO> productList = service.getRecordsList();
 
         return productList != null
-                ? ResponseEntity.ok(productList)
-                : ResponseEntity.notFound().build();
+            ? ResponseEntity.ok(productList)
+            : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @GetMapping("/{id}")
@@ -36,9 +37,9 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ProductResponseDTO> saveProduct(@Valid @RequestBody ProductCreateDTO dto) {
-        ProductResponseDTO saved = service.saveRecord(dto);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductCreateDTO dto) {
+        ProductResponseDTO created = service.saveRecord(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
@@ -52,9 +53,7 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteProduct(@PathVariable Long id) {
         boolean deleted = service.deleteRecord(id);
-        return deleted
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
 

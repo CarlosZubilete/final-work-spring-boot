@@ -15,7 +15,7 @@ import com.final_work_spring_boot.exception.NotFoundException;
 import com.final_work_spring_boot.mapper.CategoryMapper;
 import com.final_work_spring_boot.model.Category;
 import com.final_work_spring_boot.repository.ICategoryRepository;
-import com.final_work_spring_boot.service.IGenericService;
+
 
 @Service
 public class CategoryService implements ICategoryService {
