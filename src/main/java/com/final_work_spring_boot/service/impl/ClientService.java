@@ -26,19 +26,20 @@ public class ClientService implements IClientService {
     @Override
     @Transactional(readOnly = true)
     public List<ClientResponseDTO> getRecordsList() {
-        return repository.findAll().stream()
+        return repository.findAllByStatus(true).stream()
             .map(ClientMapper::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public ClientResponseDTO getRecordById(Long id) {
-        return repository.findById(id).map(ClientMapper::toDTO)
+        return repository.findByIdAndStatus(id, true).map(ClientMapper::toDTO)
             .orElseThrow(() -> new NotFoundException("Client with this id: " + id + " not found."));
     }
 
 
     @Override
+    @Transactional
     public ClientResponseDTO saveRecord(ClientCreateDTO dto) {
 
         // Find document
@@ -60,6 +61,7 @@ public class ClientService implements IClientService {
     }
 
     @Override
+    @Transactional
     public ClientResponseDTO updateRecord(Long id, ClientUpdateDTO dto) {
 
         Client existingClient = repository.findById(id)
@@ -86,6 +88,7 @@ public class ClientService implements IClientService {
     }
 
     @Override
+    @Transactional
     public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
             throw new NotFoundException("Client with this id: " + id + " not found.");

@@ -9,11 +9,20 @@ import org.springframework.stereotype.Repository;
 
 import com.final_work_spring_boot.model.Client;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface IClientRepository extends JpaRepository<Client, Long> {
     @Modifying
     @Query("UPDATE Client cli SET cli.isActive = false WHERE cli.id = :id ")
     void logicDeleteById(@Param("id") Long id);
+
+    @Query("SELECT cli FROM Client cli WHERE cli.isActive = :isActive")
+    List<Client> findAllByStatus(@Param("isActive") Boolean isActive);
+
+    @Query("SELECT cli FROM Client cli WHERE cli.id = :id AND cli.isActive = :isActive")
+    Optional<Client> findByIdAndStatus(@Param("id") Long id, @Param("isActive") Boolean isActive);
 
     boolean existsByDocument(String document);
 

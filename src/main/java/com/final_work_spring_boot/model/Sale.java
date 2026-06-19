@@ -41,7 +41,7 @@ public class Sale {
     private LocalDate date;
 
     // MANY sales belong to ONE CLIENT
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @JoinColumn(name = "id_client") // 'id_client' is the FK
     private Client client;
 
@@ -53,7 +53,7 @@ public class Sale {
     @Column(name = "total_sale")
     private Double total;
 
-    @OneToMany(mappedBy = "sale", cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sale", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Detail> details;
 
     @Column(name = "created_at")
