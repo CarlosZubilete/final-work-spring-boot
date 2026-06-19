@@ -38,6 +38,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryResponseDTO saveRecord(CategoryCreateDTO dto) {
 
         String isExistingName = dto.getName().toUpperCase().trim();
@@ -51,6 +52,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryResponseDTO updateRecord(Long id, CategoryUpdateDTO dto) {
 
         Category existingCategory = repository.findById(id)
@@ -68,6 +70,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    @Transactional
     public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
             throw new NotFoundException("Category whit ID: " + id + " NOT FOUND");

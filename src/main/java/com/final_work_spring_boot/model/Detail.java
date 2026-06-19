@@ -22,7 +22,7 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "details")
-// watchout: Sometimes <<details>> is a reserved word
+// watch out: Sometimes <<details>> is a reserved word
 public class Detail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

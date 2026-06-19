@@ -55,6 +55,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponseDTO saveRecord(ProductCreateDTO dto) {
 
         String existingCodeSKU = dto.getInventory().getCodeSKU().toUpperCase().trim();
@@ -80,6 +81,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponseDTO updateRecord(Long id, ProductUpdateDTO dto) {
 
         Product existingProduct = repository.findByIdAndStatus(id, true).orElse(null);
@@ -111,6 +113,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
             throw new NotFoundException("Product whit this id: " + id + " not found.");

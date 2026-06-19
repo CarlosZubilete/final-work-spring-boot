@@ -61,7 +61,7 @@ public class SaleService implements ISaleService {
     public SaleResponseDTO saveRecord(SaleCreateDTO dto) {
 
         // Find the Client and StateSale
-        Client existingClient = clientRepo.findById(dto.getIdClient())
+        Client existingClient = clientRepo.findByIdAndStatus(dto.getIdClient(), true)
             .orElseThrow(() -> new NotFoundException("Client with this id: " + dto.getIdClient() + " not found."));
 
         // Find the StateSale
@@ -76,7 +76,7 @@ public class SaleService implements ISaleService {
 
         for (DetailDTO detailDTO : dto.getDetails()) {
 
-            Product product = productRepo.findById(detailDTO.getIdProduct())
+            Product product = productRepo.findByIdAndStatus(detailDTO.getIdProduct(), true)
                 .orElseThrow(() -> new NotFoundException(
                     "Product with id: " + detailDTO.getIdProduct() + " not found."));
 
@@ -107,8 +107,9 @@ public class SaleService implements ISaleService {
         // Update Client
         Client existingClient = null;
         if (dto.getIdClient() != null) {
-            existingClient = clientRepo.findById(dto.getIdClient()).orElseThrow(
-                () -> new NotFoundException("Client whit this id: " + dto.getIdClient() + " not found."));
+            existingClient = clientRepo.findByIdAndStatus(dto.getIdClient(), true)
+                .orElseThrow(() -> new NotFoundException
+                    ("Client whit this id: " + dto.getIdClient() + " not found."));
         }
 
         // Update StateSale
@@ -134,23 +135,20 @@ public class SaleService implements ISaleService {
 
             Detail detail;
             for (DetailDTO detailDTO : dto.getDetails()) {
+                // find the product
+                Product product = productRepo.findByIdAndStatus(detailDTO.getIdProduct(), true)
+                    .orElseThrow(() -> new NotFoundException
+                        ("Product with this id: " + detailDTO.getIdProduct() + " not found."));
+
                 if (detailDTO.getId() != null) {
                     // Update existing detail
                     detail = detailRepos.findById(detailDTO.getId())
-                        .orElseThrow(() -> new NotFoundException(
-                            "Detail with this id: " + detailDTO.getId() + " not found."));
-
-                    Product product = productRepo.findById(detailDTO.getIdProduct())
-                        .orElseThrow(() -> new NotFoundException(
-                            "Product with this id: " + detailDTO.getIdProduct() + " not found."));
+                        .orElseThrow(() -> new NotFoundException
+                            ("Detail with this id: " + detailDTO.getId() + " not found."));
 
                     DetailMapper.updateEntity(detail, detailDTO, product);
                 } else {
                     // Create new detail
-                    Product product = productRepo.findById(detailDTO.getIdProduct())
-                        .orElseThrow(() -> new NotFoundException(
-                            "Product with id: " + detailDTO.getIdProduct() + " not found."));
-
                     detail = DetailMapper.toEntity(detailDTO, product, existingSale);
                 }
 
@@ -177,7 +175,7 @@ public class SaleService implements ISaleService {
     @Override
     public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
-            throw new NotFoundException("Sale whit ID: " + id + " NOT FOUND.");
+            throw new NotFoundException("Sale whit ID: " + id + " not found.");
 
         repository.deleteById(id);
         return true;

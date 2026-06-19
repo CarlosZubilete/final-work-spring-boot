@@ -38,6 +38,7 @@ public class StateSaleService implements IStateSale {
     }
 
     @Override
+    @Transactional
     public StateSaleResponseDTO saveRecord(StateSaleCreateDTO dto) {
         String isExistingName = dto.getName().toLowerCase().trim();
 
@@ -50,6 +51,7 @@ public class StateSaleService implements IStateSale {
     }
 
     @Override
+    @Transactional
     public StateSaleResponseDTO updateRecord(Long id, StateSaleUpdateDTO dto) {
         StateSale existingStateSale = repository.findById(id)
             .orElseThrow(() -> new NotFoundException("State Sale with ID: " + id + " not found."));
@@ -66,6 +68,7 @@ public class StateSaleService implements IStateSale {
     }
 
     @Override
+    @Transactional
     public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
             throw new NotFoundException("State Sale with ID: " + id + " not found.");

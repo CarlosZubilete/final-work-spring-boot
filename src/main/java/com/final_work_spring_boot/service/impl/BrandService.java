@@ -26,17 +26,18 @@ public class BrandService implements IBrandService {
     @Transactional(readOnly = true)
     public List<BrandResponseDTO> getRecordsList() {
         return repository.findAll().stream()
-                .map(BrandMapper::toDTO).toList();
+            .map(BrandMapper::toDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public BrandResponseDTO getRecordById(Long id) {
         return repository.findById(id).map(BrandMapper::toDTO)
-                .orElseThrow(() -> new NotFoundException("Brand with this id: " + id + " not found."));
+            .orElseThrow(() -> new NotFoundException("Brand with this id: " + id + " not found."));
     }
 
     @Override
+    @Transactional
     public BrandResponseDTO saveRecord(BrandCreateDTO dto) {
 
         String existingName = dto.getName().toUpperCase().trim();
@@ -49,10 +50,11 @@ public class BrandService implements IBrandService {
     }
 
     @Override
+    @Transactional
     public BrandResponseDTO updateRecord(Long id, BrandUpdateDTO dto) {
 
         Brand existingBrand = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Brand with this id: " + id + " not found."));
+            .orElseThrow(() -> new NotFoundException("Brand with this id: " + id + " not found."));
 
 
         if (dto.getName() != null) {
@@ -68,6 +70,7 @@ public class BrandService implements IBrandService {
     }
 
     @Override
+    @Transactional
     public boolean deleteRecord(Long id) {
         if (!repository.existsById(id))
             throw new NotFoundException("Brand with this id: " + id + " not found.");
